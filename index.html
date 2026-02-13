@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Qurio</title>
+  <meta name="description" content="Qurio — el millor quiz web: crea, juga, desbloqueja, 1vs1 i logros." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+
+  <header class="nav">
+    <div class="brand">
+      <div class="logoDot"></div>
+      <div>
+        <div class="brandName">Qurio</div>
+        <div class="brandSub">Play • Create • Progress • 1vs1</div>
+      </div>
+    </div>
+
+    <div class="navActions">
+      <button id="btnTheme" class="iconBtn" title="Tema">🌙</button>
+      <button id="btnSound" class="iconBtn" title="So">🔊</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- TOP NAV TABS -->
+    <section class="tabs card">
+      <button class="tab active" data-tab="play">Jugar</button>
+      <button class="tab" data-tab="create">Crear</button>
+      <button class="tab" data-tab="duel">1vs1</button>
+      <button class="tab" data-tab="achievements">Logros</button>
+
+      <div class="profile">
+        <div class="xp">
+          <div class="xpRow">
+            <span id="xpLabel">Nivell 1</span>
+            <span id="xpNums">0 / 100 XP</span>
+          </div>
+          <div class="xpBar"><div id="xpFill" class="xpFill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAY -->
+    <section id="tab-play" class="card panel">
+      <div class="panelHead">
+        <h2>Jugar</h2>
+        <p class="muted">Tria una temàtica i un quiz. Alguns es desbloquegen amb el teu progrés.</p>
+      </div>
+
+      <div class="filters">
+        <div class="field">
+          <label>Temàtica</label>
+          <select id="filterTopic" class="select"></select>
+        </div>
+        <div class="field">
+          <label>Mode</label>
+          <select id="filterMode" class="select">
+            <option value="solo" selected>Individual</option>
+            <option value="practice">Pràctica (sense XP)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Opcions</label>
+          <div class="checks">
+            <label class="check"><input id="optShuffle" type="checkbox" checked> Barrejar</label>
+            <label class="check"><input id="optTimer" type="checkbox" checked> Temporitzador</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="quizList" class="grid"></div>
+    </section>
+
+    <!-- CREATE -->
+    <section id="tab-create" class="card panel hidden">
+      <div class="panelHead">
+        <h2>Crear quizzes</h2>
+        <p class="muted">Crea el teu quiz amb preguntes, explicacions, imatges i vídeos.</p>
+      </div>
+
+      <div class="createGrid">
+        <div class="card inner">
+          <h3>Nou quiz</h3>
+
+          <div class="formGrid">
+            <div class="field">
+              <label>Títol</label>
+              <input id="cqTitle" class="input" placeholder="Ex: Xarxes bàsic" maxlength="40" />
+            </div>
+
+            <div class="field">
+              <label>Temàtica</label>
+              <input id="cqTopic" class="input" placeholder="Ex: Informàtica / Història / Cinema" maxlength="30" />
+            </div>
+
+            <div class="field">
+              <label>Dificultat</label>
+              <select id="cqDifficulty" class="select">
+                <option value="easy">Fàcil</option>
+                <option value="medium" selected>Mitjana</option>
+                <option value="hard">Difícil</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Descripció</label>
+              <input id="cqDesc" class="input" placeholder="Ex: Preguntes per repassar abans de l'examen" maxlength="80" />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3>Afegir pregunta</h3>
+          <div class="formGrid">
+            <div class="field full">
+              <label>Enunciat</label>
+              <textarea id="qText" class="textarea" placeholder="Escriu la pregunta..."></textarea>
+            </div>
+
+            <div class="field">
+              <label>Tipus</label>
+              <select id="qType" class="select">
+                <option value="mcq" selected>Opció múltiple</option>
+                <option value="tf">Veritable/Fals</option>
+                <option value="open">Resposta oberta</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Imatge (URL)</label>
+              <input id="qImage" class="input" placeholder="https://..." />
+            </div>
+
+            <div class="field">
+              <label>Vídeo YouTube (URL)</label>
+              <input id="qVideo" class="input" placeholder="https://www.youtube.com/watch?v=..." />
+            </div>
+
+            <div class="field full" id="mcqBlock">
+              <label>Opcions (4) + correcta</label>
+              <div class="mcqGrid">
+                <input id="o0" class="input" placeholder="Opció A" />
+                <input id="o1" class="input" placeholder="Opció B" />
+                <input id="o2" class="input" placeholder="Opció C" />
+                <input id="o3" class="input" placeholder="Opció D" />
+                <select id="mcqCorrect" class="select">
+                  <option value="0">Correcta: A</option>
+                  <option value="1">Correcta: B</option>
+                  <option value="2">Correcta: C</option>
+                  <option value="3">Correcta: D</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field full hidden" id="tfBlock">
+              <label>Correcta</label>
+              <select id="tfCorrect" class="select">
+                <option value="true">Veritable</option>
+                <option value="false">Fals</option>
+              </select>
+            </div>
+
+            <div class="field full hidden" id="openBlock">
+              <label>Resposta correcta (accepta variants separades per “|”)</label>
+              <input id="openCorrect" class="input" placeholder="Ex: router | encaminador" />
+            </div>
+
+            <div class="field full">
+              <label>Explicació (es mostra sempre)</label>
+              <textarea id="qExplain" class="textarea" placeholder="Per què és correcta?"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <button id="addQuestion" class="btn">Afegir pregunta</button>
+            <button id="saveQuiz" class="btn primary">Guardar quiz</button>
+          </div>
+
+          <p id="createHint" class="muted"></p>
+        </div>
+
+        <div class="card inner">
+          <h3>Preguntes del quiz</h3>
+          <div id="draftList" class="list"></div>
+        </div>
+
+        <div class="card inner">
+          <h3>Els meus quizzes</h3>
+          <div id="myQuizList" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DUEL -->
+    <section id="tab-duel" class="card panel hidden">
+      <div class="panelHead">
+        <h2>1vs1 (amb codi)</h2>
+        <p class="muted">Crea una sala i passa el codi. L’altre s’uneix en una altra pestanya/finestra.</p>
+      </div>
+
+      <div class="duelGrid">
+        <div class="card inner">
+          <h3>Crear sala</h3>
+          <div class="field">
+            <label>El teu nom</label>
+            <input id="duelNameHost" class="input" placeholder="Jugador 1" maxlength="20" />
+          </div>
+
+          <div class="field">
+            <label>Quiz</label>
+            <select id="duelQuizHost" class="select"></select>
+          </div>
+
+          <div class="row">
+            <button id="btnCreateRoom" class="btn primary">Crear sala</button>
+          </div>
+
+          <div id="roomInfo" class="callout hidden"></div>
+        </div>
+
+        <div class="card inner">
+          <h3>Unir-se a sala</h3>
+          <div class="field">
+            <label>El teu nom</label>
+            <input id="duelNameJoin" class="input" placeholder="Jugador 2" maxlength="20" />
+          </div>
+          <div class="field">
+            <label>Codi</label>
+            <input id="duelCode" class="input" placeholder="Ex: A7K3P" maxlength="10" />
+          </div>
+          <div class="row">
+            <button id="btnJoinRoom" class="btn">Unir-me</button>
+          </div>
+
+          <div id="joinInfo" class="callout hidden"></div>
+        </div>
+      </div>
+
+      <div id="duelArena" class="card inner hidden">
+        <div class="arenaTop">
+          <div class="arenaTitle">Sala <span id="arenaCode"></span></div>
+          <div class="arenaScores">
+            <span id="p1Score">P1: 0</span>
+            <span id="p2Score">P2: 0</span>
+          </div>
+        </div>
+
+        <div class="arenaBody">
+          <div class="arenaQ">
+            <div id="duelStatus" class="muted"></div>
+            <h3 id="arenaQuestion">Esperant...</h3>
+            <p id="arenaExplain" class="muted"></p>
+          </div>
+          <div id="arenaAnswers" class="answers"></div>
+        </div>
+
+        <div class="row space">
+          <button id="arenaStart" class="btn primary hidden">Començar</button>
+          <button id="arenaLeave" class="btn ghost">Sortir</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACHIEVEMENTS -->
+    <section id="tab-achievements" class="card panel hidden">
+      <div class="panelHead">
+        <h2>Logros</h2>
+        <p class="muted">Desbloqueja medalles jugant i creant.</p>
+      </div>
+
+      <div id="achList" class="grid"></div>
+    </section>
+
+    <!-- QUIZ PLAYER (overlay screen) -->
+    <section id="player" class="player hidden" aria-live="polite">
+      <div class="playerCard card">
+        <div class="playerTop">
+          <div>
+            <div id="playTitle" class="playerTitle">Quiz</div>
+            <div id="playMeta" class="muted">Tema • Dificultat</div>
+          </div>
+
+          <div class="playerRight">
+            <div id="timerBox" class="timer hidden" title="Temps">
+              <div class="timerRing"><div id="timerFill" class="timerFill"></div></div>
+              <div>
+                <div id="timerNum" class="timerNum">20</div>
+                <div class="timerLbl">seg</div>
+              </div>
+            </div>
+
+            <button id="btnClosePlayer" class="iconBtn" title="Tancar">✕</button>
+          </div>
+        </div>
+
+        <div class="progressRow">
+          <div class="progress"><div id="progressBar" class="progressBar"></div></div>
+          <div class="meta">
+            <span id="qCounter">Pregunta 1/10</span>
+            <span id="scoreText">Punts: 0</span>
+          </div>
+        </div>
+
+        <div class="qWrap">
+          <h3 id="qTitle" class="qTitle">Pregunta</h3>
+
+          <div id="media" class="media"></div>
+
+          <div id="answers" class="answers"></div>
+
+          <div class="explainBox hidden" id="explainBox">
+            <div id="resultBadge" class="resultBadge"></div>
+            <div id="explainText" class="explainText"></div>
+          </div>
+
+          <div class="powerups">
+            <div class="muted">Comodins:</div>
+            <button id="pu5050" class="chipBtn" title="Elimina 2 opcions (només MCQ)">50/50</button>
+            <button id="puTime" class="chipBtn" title="+10s (si hi ha temporitzador)">+Temps</button>
+            <button id="puSkip" class="chipBtn" title="Saltar pregunta">Saltar</button>
+          </div>
+
+          <div class="row space">
+            <button id="btnNext" class="btn" disabled>Següent</button>
+            <button id="btnShare" class="btn ghost">Compartir resultat</button>
+          </div>
+
+          <div id="endBox" class="endBox hidden">
+            <h3>Resultat</h3>
+            <p id="finalText" class="big"></p>
+            <p id="bestText" class="muted"></p>
+            <div class="row">
+              <button id="btnReplay" class="btn primary">Repetir</button>
+              <button id="btnHome" class="btn">Tornar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
