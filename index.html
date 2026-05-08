@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Qurio</title>
+  <meta name="description" content="Qurio — Quizzes, creador, progrés, 1vs1 i música." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"></div>
+      <div class="brandText">
+        <div class="brandName">Qurio</div>
+        <div class="brandTag">Play • Create • Progress • 1vs1</div>
+      </div>
+    </div>
+
+    <div class="topActions">
+      <button id="btnTheme" class="iconBtn" title="Tema">🌙</button>
+      <button id="btnSfx" class="iconBtn" title="Efectes">🔊</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <section class="card tabs">
+      <div class="tabRow">
+        <button class="tab active" data-tab="play">Jugar</button>
+        <button class="tab" data-tab="create">Crear</button>
+        <button class="tab" data-tab="duel">1vs1</button>
+        <button class="tab" data-tab="achievements">Logros</button>
+      </div>
+
+      <div class="xpBox">
+        <div class="xpTop">
+          <div id="xpLevel">Nivell 1</div>
+          <div id="xpNums" class="muted">0 / 100 XP</div>
+        </div>
+        <div class="xpBar"><div id="xpFill" class="xpFill"></div></div>
+      </div>
+    </section>
+
+    <!-- PLAY -->
+    <section id="tab-play" class="card panel">
+      <div class="panelHead">
+        <h2>Jugar</h2>
+        <p class="muted">Tria una temàtica. Alguns quizzes es desbloquegen amb el teu progrés.</p>
+      </div>
+
+      <!-- MUSIC -->
+      <section class="card inner" id="musicCard">
+        <div class="innerHead">
+          <div>
+            <h3>Música (SoundCloud)</h3>
+            <p class="muted">Enganxa un link de SoundCloud (track/playlist). Es reproduirà complet si l’autor ho permet.</p>
+          </div>
+        </div>
+
+        <div class="row wrap">
+          <input id="scUrl" class="input" placeholder="https://soundcloud.com/usuari/canco" />
+          <button id="btnLoadSC" class="btn primary">Cargar</button>
+          <button id="btnOpenSC" class="btn">Obrir</button>
+          <label class="check"><input id="scAutoPlay" type="checkbox"> Autoplay</label>
+          <label class="check"><input id="scMini" type="checkbox" checked> Mini</label>
+        </div>
+
+        <div id="scWrap" class="scWrap mini">
+          <div id="scMsg" class="overlay hidden"></div>
+          <iframe
+            id="scFrame"
+            title="SoundCloud Player"
+            width="100%"
+            height="166"
+            scrolling="no"
+            frameborder="no"
+            allow="autoplay"
+            src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/iamdaylight/beautiful&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=true&visual=false">
+          </iframe>
+        </div>
+      </section>
+
+      <div class="filters">
+        <div class="field">
+          <label>Temàtica</label>
+          <select id="filterTopic" class="select"></select>
+        </div>
+        <div class="field">
+          <label>Mode</label>
+          <select id="filterMode" class="select">
+            <option value="solo" selected>Individual (XP)</option>
+            <option value="practice">Pràctica (sense XP)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Opcions</label>
+          <div class="row wrap">
+            <label class="check"><input id="optShuffle" type="checkbox" checked> Barrejar</label>
+            <label class="check"><input id="optTimer" type="checkbox" checked> Temporitzador</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="quizList" class="grid"></div>
+    </section>
+
+    <!-- CREATE -->
+    <section id="tab-create" class="card panel hidden">
+      <div class="panelHead">
+        <h2>Crear</h2>
+        <p class="muted">Crea, guarda i reutilitza els teus quizzes. Pots posar imatges i vídeos i explicació sempre.</p>
+      </div>
+
+      <div class="createLayout">
+        <section class="card inner">
+          <h3>Nou quiz</h3>
+
+          <div class="formGrid">
+            <div class="field">
+              <label>Títol</label>
+              <input id="cqTitle" class="input" maxlength="50" placeholder="Ex: Cultura pop 2020s" />
+            </div>
+            <div class="field">
+              <label>Temàtica</label>
+              <input id="cqTopic" class="input" maxlength="30" placeholder="Ex: Cinema / Esports / Tecnologia" />
+            </div>
+            <div class="field">
+              <label>Dificultat</label>
+              <select id="cqDifficulty" class="select">
+                <option value="easy">Fàcil</option>
+                <option value="medium" selected>Mitjana</option>
+                <option value="hard">Difícil</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Descripció</label>
+              <input id="cqDesc" class="input" maxlength="90" placeholder="Ex: Per repassar abans de l'examen" />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3>Afegir pregunta</h3>
+          <div class="formGrid">
+            <div class="field full">
+              <label>Enunciat</label>
+              <textarea id="qText" class="textarea" placeholder="Escriu la pregunta..."></textarea>
+            </div>
+
+            <div class="field">
+              <label>Tipus</label>
+              <select id="qType" class="select">
+                <option value="mcq" selected>Opció múltiple</option>
+                <option value="tf">Veritable/Fals</option>
+                <option value="open">Resposta oberta</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Imatge (URL)</label>
+              <input id="qImage" class="input" placeholder="https://..." />
+            </div>
+
+            <div class="field">
+              <label>Vídeo YouTube (URL)</label>
+              <input id="qVideo" class="input" placeholder="https://www.youtube.com/watch?v=..." />
+            </div>
+
+            <div id="mcqBlock" class="field full">
+              <label>Opcions (4) + correcta</label>
+              <div class="mcqGrid">
+                <input id="o0" class="input" placeholder="Opció A" />
+                <input id="o1" class="input" placeholder="Opció B" />
+                <input id="o2" class="input" placeholder="Opció C" />
+                <input id="o3" class="input" placeholder="Opció D" />
+                <select id="mcqCorrect" class="select">
+                  <option value="0">Correcta: A</option>
+                  <option value="1">Correcta: B</option>
+                  <option value="2">Correcta: C</option>
+                  <option value="3">Correcta: D</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="tfBlock" class="field full hidden">
+              <label>Correcta</label>
+              <select id="tfCorrect" class="select">
+                <option value="true">Veritable</option>
+                <option value="false">Fals</option>
+              </select>
+            </div>
+
+            <div id="openBlock" class="field full hidden">
+              <label>Respostes correctes (variants separades per “|”)</label>
+              <input id="openCorrect" class="input" placeholder="Ex: router | encaminador" />
+            </div>
+
+            <div class="field full">
+              <label>Explicació (es mostra sempre)</label>
+              <textarea id="qExplain" class="textarea" placeholder="Explica per què és correcta..."></textarea>
+            </div>
+          </div>
+
+          <div class="row wrap">
+            <button id="addQuestion" class="btn">Afegir pregunta</button>
+            <button id="saveQuiz" class="btn primary">Guardar quiz</button>
+          </div>
+
+          <p id="createHint" class="muted tiny"></p>
+        </section>
+
+        <section class="card inner">
+          <h3>Preguntes del quiz</h3>
+          <div id="draftList" class="list"></div>
+        </section>
+
+        <section class="card inner">
+          <h3>Els meus quizzes</h3>
+          <div id="myQuizList" class="list"></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- DUEL -->
+    <section id="tab-duel" class="card panel hidden">
+      <div class="panelHead">
+        <h2>1vs1</h2>
+        <p class="muted">Dues pestanyes o dos ordinadors amb la mateixa web. Crea sala, comparteix codi i juga.</p>
+      </div>
+
+      <div class="duelLayout">
+        <section class="card inner">
+          <h3>Crear sala</h3>
+          <div class="field">
+            <label>Nom</label>
+            <input id="duelHostName" class="input" maxlength="20" placeholder="Jugador 1" />
+          </div>
+          <div class="field">
+            <label>Quiz</label>
+            <select id="duelHostQuiz" class="select"></select>
+          </div>
+          <div class="row wrap">
+            <button id="btnCreateRoom" class="btn primary">Crear</button>
+          </div>
+          <div id="roomInfo" class="callout hidden"></div>
+        </section>
+
+        <section class="card inner">
+          <h3>Unir-se</h3>
+          <div class="field">
+            <label>Nom</label>
+            <input id="duelJoinName" class="input" maxlength="20" placeholder="Jugador 2" />
+          </div>
+          <div class="field">
+            <label>Codi</label>
+            <input id="duelCode" class="input" maxlength="10" placeholder="Ex: A7K3P" />
+          </div>
+          <div class="row wrap">
+            <button id="btnJoinRoom" class="btn">Unir-me</button>
+          </div>
+          <div id="joinInfo" class="callout hidden"></div>
+        </section>
+      </div>
+
+      <section id="arena" class="card inner hidden">
+        <div class="arenaTop">
+          <div class="arenaLeft">
+            <div class="arenaTitle">Sala <span id="arenaCode"></span></div>
+            <div id="arenaStatus" class="muted tiny"></div>
+          </div>
+          <div class="arenaScores">
+            <span id="scoreP1">P1: 0</span>
+            <span id="scoreP2">P2: 0</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3 id="arenaQuestion">Esperant...</h3>
+        <div id="arenaAnswers" class="answers"></div>
+        <div id="arenaExplain" class="explain tiny muted"></div>
+
+        <div class="row wrap">
+          <button id="btnArenaStart" class="btn primary hidden">Començar</button>
+          <button id="btnArenaLeave" class="btn ghost">Sortir</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ACHIEVEMENTS -->
+    <section id="tab-achievements" class="card panel hidden">
+      <div class="panelHead">
+        <h2>Logros</h2>
+        <p class="muted">Desbloqueja medalles per jugar, crear i progressar.</p>
+      </div>
+
+      <div id="achList" class="grid"></div>
+    </section>
+
+    <!-- PLAYER -->
+    <section id="player" class="player hidden" aria-live="polite">
+      <div class="playerCard">
+        <div class="playerTop">
+          <div>
+            <div id="pTitle" class="playerTitle">Quiz</div>
+            <div id="pMeta" class="muted tiny">Tema • dificultat</div>
+          </div>
+
+          <div class="playerRight">
+            <div id="timerBox" class="timer hidden">
+              <div class="timerNum" id="timerNum">20</div>
+              <div class="tiny muted">seg</div>
+            </div>
+            <button id="btnClose" class="iconBtn" title="Tancar">✕</button>
+          </div>
+        </div>
+
+        <div class="progressRow">
+          <div class="progress"><div id="pProg" class="progressFill"></div></div>
+          <div class="row space tiny">
+            <span id="pCounter">1/5</span>
+            <span id="pScore">Punts: 0</span>
+          </div>
+        </div>
+
+        <h3 id="qTitlePlay" class="qTitle">Pregunta</h3>
+        <div id="qMedia" class="media"></div>
+        <div id="qAnswers" class="answers"></div>
+
+        <div id="feedback" class="feedback hidden">
+          <div id="badge" class="badge"></div>
+          <div id="explainText" class="explain"></div>
+        </div>
+
+        <div class="row wrap powerups">
+          <span class="muted tiny">Comodins:</span>
+          <button id="pu5050" class="chip">50/50</button>
+          <button id="puTime" class="chip">+Temps</button>
+          <button id="puSkip" class="chip">Saltar</button>
+        </div>
+
+        <div class="row space wrap">
+          <button id="btnNext" class="btn" disabled>Següent</button>
+          <button id="btnShare" class="btn ghost">Compartir resultat</button>
+        </div>
+
+        <div id="end" class="end hidden">
+          <h3>Resultat</h3>
+          <p id="endText" class="big"></p>
+          <p id="bestText" class="muted tiny"></p>
+          <div class="row wrap">
+            <button id="btnReplay" class="btn primary">Repetir</button>
+            <button id="btnHome" class="btn">Tornar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="quizzes.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
